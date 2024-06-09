@@ -16,10 +16,37 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
+    <Filter Include="Source\PreCompiledHeader">
+      <UniqueIdentifier>{ec392abf-4d71-468a-909e-02986cf19be1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Ressources\Icons">
+      <UniqueIdentifier>{1829c86c-7487-4bd5-8c38-99cbeca515e7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\WinMain.cpp">
       <Filter>Source\Private</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Precompiled_header.cpp">
+      <Filter>Source\PreCompiledHeader</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Source\Precompiled_header.h">
+      <Filter>Source\PreCompiledHeader</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Ressources</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="DirectX.rc">
+      <Filter>Ressources</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Content\Icons\probe-engine.ico">
+      <Filter>Ressources</Filter>
+    </Image>
   </ItemGroup>
 </Project>
