@@ -73,6 +73,8 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Create</PrecompiledHeader>
       <PrecompiledHeaderFile>Precompiled_header.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -82,11 +84,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\3Dapp.cpp" />
+    <ClCompile Include="Source\3DappUtil.cpp" />
+    <ClCompile Include="Source\GameTimer.cpp" />
     <ClCompile Include="Source\Precompiled_header.cpp" />
     <ClCompile Include="Source\WinMain.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
+    <ClInclude Include="Source\3Dapp.h" />
+    <ClInclude Include="Source\3DappUtil.h" />
+    <ClInclude Include="Source\GameTimer.h" />
     <ClInclude Include="Source\Precompiled_header.h" />
   </ItemGroup>
   <ItemGroup>
