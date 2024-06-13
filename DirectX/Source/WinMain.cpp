@@ -1,120 +1,123 @@
-#include "Precompiled_header.h"
-
 /*----------------------------------------------*/
 /*   Author : mylgasia - Guillaume Bataille     */
 /*   Licence : MIT Licence                      */
 /*----------------------------------------------*/
 
-/*------ Global Variables */
-#pragma region GlobalVariables
+#include "Precompiled_header.h"
+#include "3Dapp.h"
 
-WCHAR WindowClass[MAX_NAME_STRING];
-WCHAR WindowTitle[MAX_NAME_STRING];
-INT WindowWidth;
-INT WindowHeight;
-HICON Icon;
-
-#pragma endregion
-
-/*------ Declarations */
-#pragma region Declarations
-
-VOID InitWinMainVar();
-VOID CreateWindowClass();
-VOID InitWindow();
-VOID MessageListener();
-LRESULT CALLBACK WindowProcess(HWND w_inst, UINT w_msg, WPARAM w_param, LPARAM l_param);
-#pragma endregion
-
-/*------ Main program */
-#pragma region Main
-int CALLBACK WinMain(HINSTANCE, HINSTANCE, LPSTR, INT)
+/* Main app that extends D3DApp */
+class InitDirect3DApp : public D3DApp
 {
-	InitWinMainVar();
-	CreateWindowClass();
-	InitWindow();
-	MessageListener();	
-	return 0;
+public:
+	InitDirect3DApp(HINSTANCE hInstance);
+	~InitDirect3DApp();
+
+	virtual bool Initialize()override;
+
+private:
+	virtual void OnResize()override;
+	virtual void Update(const GameTimer& gt)override;
+	virtual void Draw(const GameTimer& gt)override;
+
 };
 
-/* A window processing system */
-LRESULT CALLBACK WindowProcess(HWND w_inst, UINT w_msg, WPARAM w_param, LPARAM l_param)
+
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
+	PSTR cmdLine, int showCmd)
 {
-	std::cout << "Message type : " << w_msg << std::endl;
-	switch (w_msg)
+	//Memory debug to check leaks if debug
+#if defined(DEBUG) | defined(_DEBUG)
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+#endif
+
+	try //Init the app (only once)
 	{
-	case WM_DESTROY:
-		PostQuitMessage(0);
-		break;
+		InitDirect3DApp theApp(hInstance);
+		if (!theApp.Initialize())
+			return 0;
+
+		return theApp.Run();
 	}
-	return DefWindowProc(w_inst, w_msg, w_param, l_param);
-}
-
-#pragma endregion
-
-/*------Functions */
-#pragma region Functions
-
-/* Initiate variables to handle main*/
-VOID InitWinMainVar()
-{
-	LoadString(HInstance(), IDS_GAMENAME, WindowClass, MAX_NAME_STRING);
-	LoadString(HInstance(), IDS_WINDOWNAME, WindowTitle, MAX_NAME_STRING);
-	WindowWidth = WIDTH;
-	WindowHeight = HEIGHT;
-	Icon = LoadIcon(HInstance(), MAKEINTRESOURCE(101));
-}
-
-/* Create a window instance */
-VOID CreateWindowClass()
-{
-	WNDCLASSEX wcex;
-	wcex.cbSize = sizeof(WNDCLASSEX);
-	wcex.style = CS_HREDRAW | CS_VREDRAW;
-	wcex.cbClsExtra = 0;
-	wcex.cbWndExtra = 0;
-
-	wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
-	wcex.hbrBackground = (HBRUSH)GetStockObject(NULL_BRUSH);
-
-	wcex.hIcon = Icon;
-	wcex.hIconSm = Icon;
-
-	wcex.lpszMenuName = WindowClass;
-
-	wcex.hInstance = HInstance();
-
-	wcex.lpfnWndProc = WindowProcess;
-
-	wcex.lpszClassName = WindowClass;
-
-	RegisterClassEx(&wcex);
-}
-
-/* Generate a window */
-VOID InitWindow()
-{
-	HWND hWnd = CreateWindow(WindowClass, WindowTitle, WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, 0, WindowWidth, WindowHeight, nullptr, nullptr, HInstance(), nullptr);
-	if (!hWnd)
+	catch (DxException& e)
 	{
-		MessageBox(0, L"Failed to Create Window!", 0, 0);
-		PostQuitMessage(0);
-	}
-	ShowWindow(hWnd, SW_SHOW);
-}
-
-/* A listener loop on messages */
-VOID MessageListener()
-{
-	MSG msg = { 0 };
-	while (msg.message != WM_QUIT)
-	{
-		if (PeekMessage(&msg, 0, 0, 0, PM_REMOVE))
-		{
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
-		}
+		MessageBox(nullptr, e.ToString().c_str(), L"HR Failed", MB_OK);
+		return 0;
 	}
 }
 
-#pragma endregion
+InitDirect3DApp::InitDirect3DApp(HINSTANCE hInstance)
+	: D3DApp(hInstance)
+{
+}
+
+InitDirect3DApp::~InitDirect3DApp()
+{
+}
+
+bool InitDirect3DApp::Initialize()
+{
+	if (!D3DApp::Initialize())
+		return false;
+
+	return true;
+}
+
+void InitDirect3DApp::OnResize()
+{
+	D3DApp::OnResize();
+}
+
+void InitDirect3DApp::Update(const GameTimer& gt)
+{
+
+}
+
+void InitDirect3DApp::Draw(const GameTimer& gt)
+{
+	// Reuse the memory associated with command recording.
+	// We can only reset when the associated command lists have finished execution on the GPU.
+	ThrowIfFailed(mDirectCmdListAlloc->Reset());
+
+	// A command list can be reset after it has been added to the command queue via ExecuteCommandList.
+	// Reusing the command list reuses memory.
+	ThrowIfFailed(mCommandList->Reset(mDirectCmdListAlloc.Get(), nullptr));
+
+	// Indicate a state transition on the resource usage.
+	CD3DX12_RESOURCE_BARRIER barrier1 = CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(),
+		D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+	mCommandList->ResourceBarrier(1, &barrier1);
+
+	// Set the viewport and scissor rect.  This needs to be reset whenever the command list is reset.
+	mCommandList->RSSetViewports(1, &mScreenViewport);
+	mCommandList->RSSetScissorRects(1, &mScissorRect);
+
+	// Clear the back buffer and depth buffer.
+	mCommandList->ClearRenderTargetView(CurrentBackBufferView(), Colors::LightSteelBlue, 0, nullptr);
+	mCommandList->ClearDepthStencilView(DepthStencilView(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
+
+	// Specify the buffers we are going to render to.
+	D3D12_CPU_DESCRIPTOR_HANDLE currentBackBufferView = CurrentBackBufferView();
+	D3D12_CPU_DESCRIPTOR_HANDLE depthStencilView = DepthStencilView();
+	mCommandList->OMSetRenderTargets(1, &currentBackBufferView, TRUE, &depthStencilView);
+
+	// Indicate a state transition on the resource usage.
+	barrier1 = CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
+	mCommandList->ResourceBarrier(1, &barrier1);
+
+	// Done recording commands.
+	ThrowIfFailed(mCommandList->Close());
+
+	// Add the command list to the queue for execution.
+	ID3D12CommandList* cmdsLists[] = { mCommandList.Get() };
+	mCommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
+
+	// swap the back and front buffers
+	ThrowIfFailed(mSwapChain->Present(0, 0));
+	mCurrBackBuffer = (mCurrBackBuffer + 1) % SwapChainBufferCount;
+
+	// Wait until frame commands are complete.  This waiting is inefficient and is
+	// done for simplicity.  Later we will show how to organize our rendering code
+	// so we do not have to wait per frame.
+	FlushCommandQueue();
+}
