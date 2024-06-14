@@ -39,6 +39,9 @@
     <ClCompile Include="Source\GameTimer.cpp">
       <Filter>Source\Private</Filter>
     </ClCompile>
+    <ClCompile Include="Source\DataStruct.cpp">
+      <Filter>Source\Private</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Precompiled_header.h">
@@ -54,6 +57,9 @@
       <Filter>Source\Public</Filter>
     </ClInclude>
     <ClInclude Include="Source\GameTimer.h">
+      <Filter>Source\Public</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DataStruct.h">
       <Filter>Source\Public</Filter>
     </ClInclude>
   </ItemGroup>

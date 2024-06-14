@@ -5,6 +5,8 @@
 
 #include "Precompiled_header.h"
 #include "3Dapp.h"
+#include "DataStruct.h"
+
 
 /* Main app that extends D3DApp */
 class InitDirect3DApp : public D3DApp
