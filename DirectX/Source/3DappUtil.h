@@ -67,7 +67,7 @@ inline std::wstring AnsiToWString(const std::string& str)
 }
 
 /* Callback when errorcode is failed */
-inline void ThrowIfFailed(HRESULT hr)
+/*inline void ThrowIfFailed(HRESULT hr)
 {
     if (FAILED(hr))
     {
@@ -75,7 +75,7 @@ inline void ThrowIfFailed(HRESULT hr)
         std::wstring errMsg = L"Operation failed with HRESULT: " + std::to_wstring(hr) + L"\n" + err.ErrorMessage();
         throw std::runtime_error(std::string(errMsg.begin(), errMsg.end()));
     }
-}
+}*/
 
 /* Free COM ptr */
 inline void ReleaseCom(IUnknown* x)
