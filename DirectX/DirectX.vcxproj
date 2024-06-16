@@ -88,16 +88,19 @@
     <ClCompile Include="Source\3DappUtil.cpp" />
     <ClCompile Include="Source\DataStruct.cpp" />
     <ClCompile Include="Source\GameTimer.cpp" />
+    <ClCompile Include="Source\MathHelper.cpp" />
     <ClCompile Include="Source\Precompiled_header.cpp" />
     <ClCompile Include="Source\WinMain.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Depedencies\MathHelper.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Source\3Dapp.h" />
     <ClInclude Include="Source\3DappUtil.h" />
     <ClInclude Include="Source\DataStruct.h" />
     <ClInclude Include="Source\GameTimer.h" />
     <ClInclude Include="Source\Precompiled_header.h" />
+    <ClInclude Include="Source\UploadBuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectX.rc" />

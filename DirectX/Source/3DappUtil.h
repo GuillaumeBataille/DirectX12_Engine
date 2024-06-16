@@ -1,3 +1,4 @@
+#pragma once
 
 /*-------------------- CLASS AND FUNCTION TO MANAGE SOME OPERATIONS EASILY  --------------------*/
 

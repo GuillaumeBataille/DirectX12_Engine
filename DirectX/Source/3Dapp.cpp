@@ -1,9 +1,6 @@
 #include "Precompiled_header.h"
 #include "3DApp.h"
 
-using Microsoft::WRL::ComPtr;
-using namespace std;
-using namespace DirectX;
 
 LRESULT CALLBACK
 /* Handle message on the window instance */
@@ -482,26 +479,47 @@ return true;
 
 void D3DApp::CreateCommandObjects()
 {
+	// Décrire et créer la file de commandes (Command Queue)
 	D3D12_COMMAND_QUEUE_DESC queueDesc = {};
 	queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
 	queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
-	ThrowIfFailed(md3dDevice->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&mCommandQueue)));
+	HRESULT hr = md3dDevice->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&mCommandQueue));
+	if (FAILED(hr)) {
+		OutputDebugString(L"Failed to create command queue\n");
+		ThrowIfFailed(hr);
+	}
 
-	ThrowIfFailed(md3dDevice->CreateCommandAllocator(
+	// Créer l'allocateur de commandes (Command Allocator)
+	hr = md3dDevice->CreateCommandAllocator(
 		D3D12_COMMAND_LIST_TYPE_DIRECT,
-		IID_PPV_ARGS(mDirectCmdListAlloc.GetAddressOf())));
+		IID_PPV_ARGS(mDirectCmdListAlloc.GetAddressOf()));
+	if (FAILED(hr)) {
+		OutputDebugString(L"Failed to create command allocator\n");
+		ThrowIfFailed(hr);
+	}
 
-	ThrowIfFailed(md3dDevice->CreateCommandList(
+	// Créer la liste de commandes (Command List)
+	hr = md3dDevice->CreateCommandList(
 		0,
 		D3D12_COMMAND_LIST_TYPE_DIRECT,
-		mDirectCmdListAlloc.Get(), // Associated command allocator
-		nullptr,                   // Initial PipelineStateObject
-		IID_PPV_ARGS(mCommandList.GetAddressOf())));
+		mDirectCmdListAlloc.Get(), // Allocateur de commandes associé
+		nullptr,                   // Pas d'objet de pipeline initial
+		IID_PPV_ARGS(mCommandList.GetAddressOf()));
+	if (FAILED(hr)) {
+		OutputDebugString(L"Failed to create command list\n");
+		ThrowIfFailed(hr);
+	}
 
-	// Start off in a closed state.  This is because the first time we refer 
-	// to the command list we will Reset it, and it needs to be closed before
-	// calling Reset.
-	mCommandList->Close();
+	// La liste de commandes commence en état fermé. Cela est nécessaire car
+	// la première fois que nous faisons référence à la liste de commandes, nous devrons la réinitialiser,
+	// et elle doit être fermée avant d'appeler Reset.
+	hr = mCommandList->Close();
+	if (FAILED(hr)) {
+		OutputDebugString(L"Failed to close command list\n");
+		ThrowIfFailed(hr);
+	}
+
+
 }
 
 void D3DApp::CreateSwapChain()
@@ -512,7 +530,7 @@ void D3DApp::CreateSwapChain()
 	DXGI_SWAP_CHAIN_DESC sd;
 	sd.BufferDesc.Width = mClientWidth;
 	sd.BufferDesc.Height = mClientHeight;
-	sd.BufferDesc.RefreshRate.Numerator = 60;
+	sd.BufferDesc.RefreshRate.Numerator = 144;
 	sd.BufferDesc.RefreshRate.Denominator = 1;
 	sd.BufferDesc.Format = mBackBufferFormat;
 	sd.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;

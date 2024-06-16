@@ -4,6 +4,8 @@
 #include <iostream>
 #include <string>
 #include <unordered_map>
+#include <array>
+#include <algorithm>
 
 #include <windows.h>			// Window,message,threads
 #include <WindowsX.h>			// Inputs and interactions
@@ -30,7 +32,7 @@
 //#include <memory>
 //#include <algorithm>
 //#include <vector>
-//#include <array>
+
 //#include <cstdint>
 //#include <sstream>
 //#include <cassert>
